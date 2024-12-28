@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trending Topics | Shivam</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+        .root { margin-top: 20px; }
+        p { margin: 5px 0; padding: 10px; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <h1>Trending Topics Scraper</h1>
+    <button id="scrapeButton">Click To Scrape Data</button>
+    <div class="root"></div>
+
+    <script>
+        const button = document.getElementById("scrapeButton");
+        const rootDiv = document.querySelector(".root");
+
+        button.addEventListener("click", async () => {
+            button.disabled = true;
+            button.textContent = "Scraping...";
+            rootDiv.innerHTML = "<p>Fetching data...</p>";
+
+            try {
+                const response = await fetch("/scrape"); // Call the server endpoint
+                if (!response.ok) throw new Error("Failed to fetch data");
+
+                const data = await response.json();
+                rootDiv.innerHTML = ""; // Clear previous content
+
+                data.forEach((element) => {
+                    const p = document.createElement("p");
+                    p.textContent = element.label || `IP: ${element.ipAddress}`;
+                    rootDiv.appendChild(p);
+                });
+            } catch (error) {
+                console.error("Error:", error);
+                rootDiv.innerHTML = "<p style='color: red;'>Error fetching data.</p>";
+            } finally {
+                button.disabled = false;
+                button.textContent = "Click To Scrape Data";
+            }
+        });
+    </script>
+</body>
+</html>
